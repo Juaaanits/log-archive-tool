@@ -1,23 +1,22 @@
 # 🖥️ Log Archive Tool
 
-A **Bash script** for achiving logs on a set schedule by compressing them and storing them in a new directory, useful for removing old logs and keeping the system clean while maintaining the logs in a compressed format for future reference.
+A **Bash script** designed to automate log management by archiving log files, compressing them to save disk space, and enforcing retention policies, ideal for maintaining clean and organized Linux servers.
 
 ---
 
 ## ⚙️ Features
 
-The `server-stats.sh` script provides:
+The `log-archive.sh` script provides:
 
-- 🏷️ **OS Version** — Displays `NAME` and `VERSION` from the system release info.  
-- ⏱️ **System Uptime** — Shows uptime in hours and minutes (without unnecessary load details).  
-- 📊 **Load Average** — Reports system load for the last 1, 5, and 15 minutes.  
-- 👥 **Currently Logged-in Users** — Displays active sessions.  
-- 🔐 **Failed Login Attempts (last 5)** — If `/var/log/auth.log` exists, shows the latest 5 failed attempts.  
-- 🧠 **CPU Usage** — Displays CPU usage percentage (checks if `mpstat` is installed).  
-- 💾 **Memory Usage** — Displays memory usage percentage with a warning for high usage.  
-- 🔝 **Top 5 Processes by CPU Usage** — Sorted list by CPU usage.  
-- 🔝 **Top 5 Processes by Memory Usage** — Sorted list by memory usage.  
-- 🗄️ **Disk Usage** — Displays disk usage filtered to `/dev/`, `/media/`, and `/mnt/` mount points.
+- 📂 **Configurable Log Source Directory** — Defines a target log directory (`/var/log/myapp`) containing application log files to manage.
+- 🗃️ **Automatic Archive Directory Creation** — Ensures the archive directory (`/var/log/archives`) exists before processing.
+- 🕒 **Timestamped Archives** — Generates uniquely named `.tar.gz` files using a precise date-time format (`YYYYMMDDHHMMSS`).
+- 📦 **Log Compression** — Compresses log files into `.tar.gz` archives to reduce disk usage.
+- 🧹 **Old Log Detection** — Automatically finds `.log` files older than **7 days** using `find` and `mtime`.
+- 🔐 **Safe File Handling** — Uses `-print0` and `xargs -0` to safely process files with spaces or special characters.
+- ♻️ **Retention Policy Enforcement** — Deletes archived log files older than the configured retention period (**30 days**).
+- 🧩 **Modular Function Design** — Separates responsibilities into reusable functions for clarity and maintainability.
+- 📢 **Execution Feedback** — Prints clear status messages to indicate progress and completion time.
 
 ---
 
@@ -26,59 +25,26 @@ The `server-stats.sh` script provides:
 Clone the repository or manually copy the script to your server:
 
 ```bash
-git clone https://github.com/Juaaanits/server-stats.git
-cd server-stats
+git clone https://github.com/Juaaanits/log-archive-tool.git
+cd log-archive-tool
 ```
 
 Make the script executable:
 
 ```bash
-chmod +x server-stats.sh
+chmod +x log-archive-tool.sh
 ```
 
 Run the script:
 
 ```bash
-./server-stats.sh
+./log-archive-tool.sh
 ```
 
----
+(Optional) Schedule with ``cron`` for automation:
 
-## 📂 Example Output
-
-```
-Operating System Version:
-    NAME="Ubuntu"
-    VERSION="24.04.3 LTS (Noble Numbat)"
-
-System Uptime:
-    2:52, 1 user
-
-Current System Load Average:
-    0.18, 0.12, 0.10
-
-Failed login attempts (last 5):
-    None
-
-CPU Usage: 0.50%
-
-Top 5 Processes by CPU Usage:
-    PID    PPID CMD                         %CPU
-  28545    5599 /opt/google/chrome/chrome -  2.6
-   2586    2336 /usr/bin/gnome-shell         1.7
-   ...
-
-Memory Usage: 16.9%
-
-Top 5 Processes by Memory Usage:
-    PID    PPID CMD                         %MEM
-   5578    2586 /opt/google/chrome/chrome    2.4
-   ...
-
-Total Disk Usage:
-Filesystem      Size  Used Avail Use% Mounted on
-/dev/sda2       457G   20G  414G   5% /
-/dev/sda1       1.1G  7.8M  1.1G   1% /boot/efi
+```bash
+./log-archive-tool.sh
 ```
 
 ---
@@ -87,16 +53,12 @@ Filesystem      Size  Used Avail Use% Mounted on
 
 - Linux-based system  
 - Bash shell (`/bin/bash`)  
-- Standard system utilities:
-  - `mpstat` (optional)
-  - `free`
-  - `df`
-  - `uptime`
-  - `who`
-  - `grep`
-  - `tail`
-
-> 💡 **Note:** If `mpstat` is not installed, CPU usage will show a warning but the script continues running.
+- Standard Unix utilities:
+  - `find` 
+  - `tar`
+  - `xargs`
+  - `mkdir`
+  - `date`
 
 ---
 
@@ -119,10 +81,9 @@ This project is licensed under the **MIT License**.
 
 ---
 
-### ✅ Key Improvements
+### ✅ Possible Enhancements (Optional)
 
-- Added display of the **last 5 failed login attempts**  
-- Implemented **CPU usage check** for missing `mpstat`  
-- Simplified **uptime output** for readability  
-- **Filtered disk output** for relevant mounts only  
-- Highlighted **memory usage warnings**
+- Add **dry-run mode** for safe testing
+- Implement **logging to a separate audit file**
+- Add **email or Slack notifications** on completion
+- Parameterize retention days via CLI arguments
